@@ -5,6 +5,7 @@ function buildMetadata(sample) {
   // Use `d3.json` to fetch the metadata for a sample
     // Use d3 to select the panel with id of `#sample-metadata`
   d3.json(`/metadata/${sample}`).then(function(metadata) {
+    console.log(metadata)
     var sample_panel = d3.select("#sample-metadata");
   
     // Use `.html("") to clear any existing metadata
@@ -29,6 +30,7 @@ d3.json(`/samples/${sample}`).then(function(sampleData) {
   var sample_values = sampleData.sample_values;
   var otu_ids = sampleData.otu_ids;
   var otu_labels = sampleData.otu_labels;
+  console.log(sampleData);
 
   var traceBubble = {
     x: otu_ids,
@@ -71,8 +73,8 @@ d3.json(`/samples/${sample}`).then(function(sampleData) {
 
     var layoutPie = {
       title: "Belly Pie",
-      height: 400,
-      width: 400
+      height: 600,
+      width: 600
     }
 
     Plotly.newPlot("pie", pieData, layoutPie);
