@@ -4,7 +4,7 @@ function buildMetadata(sample) {
 
   // Use `d3.json` to fetch the metadata for a sample
     // Use d3 to select the panel with id of `#sample-metadata`
-  d3.json(`/metadata/${sample}`).then(function(data) {
+  d3.json(`/metadata/${sample}`).then(function(metadata) {
     var sample_panel = d3.select("#sample-metadata");
   
     // Use `.html("") to clear any existing metadata
@@ -12,8 +12,9 @@ function buildMetadata(sample) {
     // Use `Object.entries` to add each key and value pair to the panel
     // Hint: Inside the loop, you will need to use d3 to append new
     // tags for each key-value in the metadata.
-    Object.defineProperties(data).ForEach(([key, value]) => {
-      sample_panel.append("h6").text(`${key}: ${value}`);
+    Object.entries(metadata).forEach(function(object) {
+      var row = sample_panel.append("p");
+      row.text(`${object}`);
     });
     // BONUS: Build the Gauge Chart
     // buildGauge(data.WFREQ);
@@ -24,51 +25,61 @@ function buildCharts(sample) {
 
   // @TODO: Use `d3.json` to fetch the sample data for the plots
   // https://plot.ly/javascript/bubble-charts/
-d3.json(`/samples/${sample}`).then(function(data) {
-  var sample_values = data.sample_values;
-  var otu_ids = data.otu_ids;
-  var otu_labels = data.otu_labels;
+d3.json(`/samples/${sample}`).then(function(sampleData) {
+  var sample_values = sampleData.sample_values;
+  var otu_ids = sampleData.otu_ids;
+  var otu_labels = sampleData.otu_labels;
 
   var traceBubble = {
     x: otu_ids,
     y: sample_values,
+    type: 'scatter',
     text: otu_labels,
     mode: 'markers',
     marker: {
       size: sample_values,
+      color: otu_ids,
     }
   };
 
   var data2 = [traceBubble];
 
   var layoutBubble = {
-    title: 'Belly Button',
-    
-  };
+    title: 'Belly Bubble',
+    };
 
 
     // @TODO: Build a Bubble Chart using the sample data
   Plotly.newPlot("bubble", data2, layoutBubble);
-
+});
     // @TODO: Build a Pie Chart
     // HINT: You will need to use slice() to grab the top 10 sample_values,
     // otu_ids, and labels (10 each).
-  var tracePie = [{
-    values: sample_values.slice(0, 10),
-    labels: otu_ids.slice(0, 10),
-    hovertext: otu_labels.slice(0, 10),
-    hoverinfo: "hovertext",
-    type: "pie"
-  }];
+  d3.json(`/samples/${sample}`).then(function(sampleData) {
+    var sample_values = sampleData.sample_values;
+    var otu_ids = sampleData.otu_ids;
+    var otu_labels = sampleData.otu_labels;
 
-  var layout = {
-    title: "Belly Button Biodiversity",
-    height: 400,
-    width: 600,
-  };
+    var tracePie = {
+      values: sample_values.slice(0, 10),
+      labels: otu_ids.slice(0, 10),
+      type: "pie",
+      hovertext: otu_labels,
+    };
 
-  Plotly.newPlot("pie", tracePie, layout)
-});
+    var pieData = [tracePie];
+
+    var layoutPie = {
+      title: "Belly Pie",
+      height: 400,
+      width: 400
+    }
+
+    Plotly.newPlot("pie", pieData, layoutPie);
+  });
+}
+
+buildCharts();
 
 function init() {
   // Grab a reference to the dropdown select element
@@ -98,4 +109,3 @@ function optionChanged(newSample) {
 
 // Initialize the dashboard
 init();
-};

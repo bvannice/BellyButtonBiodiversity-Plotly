@@ -1,5 +1,4 @@
-from app.py import db
-import os
+from bellybutton23.app import db
 
 # db.drop_all()
-db.creade_all()
+db.create_all()
